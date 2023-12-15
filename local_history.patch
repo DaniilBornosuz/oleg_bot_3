@@ -1,0 +1,21 @@
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.py b/main.py
+--- a/main.py	
++++ b/main.py	(date 1702626055821)
+@@ -42,9 +42,9 @@
+ 
+ @dp.message_handler(commands=['start'])
+ async def start(message: types.Message):
+-    adkb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+-    but =types.ReplyKeyboardMarkup(text="Дэвы/Разработка", callback_data='dev'))
+-    adkb.add(types.ReplyKeyboardMarkup(text="Администрирование Windows", callback_data='windows'))
++    adkb = types.InlineKeyboardMarkup(resize_keyboard=True)
++    adkb.add(types.InlineKeyboardButton(text="Дэвы/Разработка", callback_data='dev'))
++    adkb.add(types.InlineKeyboardButton(text="Администрирование Windows", callback_data='windows'))
+     adkb.add(types.InlineKeyboardButton(text="Практические задания Linux/bsd", callback_data='linux'))
+     adkb.add(types.InlineKeyboardButton(text="Проекты ИБ Безопасность", callback_data='IB'))
+     adkb.add(types.InlineKeyboardButton(text="Мне просто сделать документы по практике", callback_data='lazy'))
