@@ -12,16 +12,7 @@ from aiogram import F
 from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.enums import ParseMode
-#import aiogram
-#from aiogram.types import InputFile, ContentType
-#from aiogram import Bot, Dispatcher, executor, types
-#from aiogram.contrib.fsm_storage.memory import MemoryStorage
-#from aiogram.dispatcher import FSMContext
-#from aiogram.bot.api import TelegramAPIServer
-#from aiogram.dispatcher.filters.state import State, StatesGroup
-#from aiogram.types import Message, InlineKeyboardButton, contact
-#from aiogram.utils.exceptions import (MessageToEditNotFound, MessageCantBeEdited, MessageCantBeDeleted,
-                                     # MessageToDeleteNotFound)
+
 
 API_TOKEN = '6976515071:AAEoQKuWyo5IpuW257iJex-A2hCAfSxY_VQ'
 ADMIN = 417905942
