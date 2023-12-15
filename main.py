@@ -3,16 +3,25 @@ import sqlite3
 import types
 import time
 
-import aiogram
-from aiogram.types import InputFile, ContentType
-from aiogram import Bot, Dispatcher, executor, types
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram.dispatcher import FSMContext
-from aiogram.bot.api import TelegramAPIServer
-from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import Message, InlineKeyboardButton, contact
-from aiogram.utils.exceptions import (MessageToEditNotFound, MessageCantBeEdited, MessageCantBeDeleted,
-                                      MessageToDeleteNotFound)
+import executor
+from aiogram import Bot, Dispatcher
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram import F
+from aiogram.types import Message
+from aiogram.filters import Command
+from aiogram.enums import ParseMode
+#import aiogram
+#from aiogram.types import InputFile, ContentType
+#from aiogram import Bot, Dispatcher, executor, types
+#from aiogram.contrib.fsm_storage.memory import MemoryStorage
+#from aiogram.dispatcher import FSMContext
+#from aiogram.bot.api import TelegramAPIServer
+#from aiogram.dispatcher.filters.state import State, StatesGroup
+#from aiogram.types import Message, InlineKeyboardButton, contact
+#from aiogram.utils.exceptions import (MessageToEditNotFound, MessageCantBeEdited, MessageCantBeDeleted,
+                                     # MessageToDeleteNotFound)
 
 API_TOKEN = '6976515071:AAEoQKuWyo5IpuW257iJex-A2hCAfSxY_VQ'
 ADMIN = 417905942
@@ -40,8 +49,8 @@ class dialog(StatesGroup):
     send_contact_lin = State()
 
 
-@dp.message_handler(commands=['start'])
-async def start(message: types.Message):
+@dp.message(Command['start'])
+async def start(message: Message):
     adkb = types.InlineKeyboardMarkup(resize_keyboard=True)
     adkb.add(types.InlineKeyboardButton(text="Дэвы/Разработка", callback_data='dev'))
     adkb.add(types.InlineKeyboardButton(text="Администрирование Windows", callback_data='windows'))
@@ -99,31 +108,31 @@ async def IB(callback_query: types.CallbackQuery):
     await dialog.send_contact_IB.set()
 
 
-@dp.message_handler(state=dialog.send_contact_dev, content_types=types.ContentType.CONTACT)
+@dp.message(state=dialog.send_contact_dev, content_types=types.ContentType.CONTACT)
 async def proc(message: types.Message, state: FSMContext):
     await bot.send_contact(OLEG, first_name=message.contact.first_name, last_name=message.contact.last_name, phone_number=message.contact.phone_number)
     await bot.send_message(OLEG, text="dev")
     await state.finish()
 
-@dp.message_handler(state=dialog.send_contact_win, content_types=types.ContentType.CONTACT)
+@dp.message(state=dialog.send_contact_win, content_types=types.ContentType.CONTACT)
 async def proc(message: types.Message, state: FSMContext):
     await bot.send_contact(OLEG, first_name=message.contact.first_name, last_name=message.contact.last_name, phone_number=message.contact.phone_number)
     await bot.send_message(OLEG, text="win")
     await state.finish()
 
-@dp.message_handler(state=dialog.send_contact_IB, content_types=types.ContentType.CONTACT)
+@dp.message(state=dialog.send_contact_IB, content_types=types.ContentType.CONTACT)
 async def proc(message: types.Message, state: FSMContext):
     await bot.send_contact(ADMIN, first_name=message.contact.first_name, last_name=message.contact.last_name, phone_number=message.contact.phone_number)
     await bot.send_message(ADMIN, text="IB")
     await state.finish()
 
-@dp.message_handler(state=dialog.send_contact_lin, content_types=types.ContentType.CONTACT)
+@dp.message(state=dialog.send_contact_lin, content_types=types.ContentType.CONTACT)
 async def proc(message: types.Message, state: FSMContext):
     await bot.send_contact(OLEG, first_name=message.contact.first_name, last_name=message.contact.last_name, phone_number=message.contact.phone_number)
     await bot.send_message(OLEG, text="linux")
     await state.finish()
 
-@dp.message_handler(content_types=['photo'])
+@dp.message(content_types=['photo'])
 async def get_file_id_p(message: types.Message):
     await message.reply(message.photo[-1].file_id)
 
