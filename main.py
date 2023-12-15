@@ -12,6 +12,7 @@ from aiogram import F
 from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.enums import ParseMode
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 
 API_TOKEN = '6976515071:AAEoQKuWyo5IpuW257iJex-A2hCAfSxY_VQ'
@@ -19,7 +20,7 @@ ADMIN = 417905942
 OLEG = 498487337
 oleg_chat_id = 0
 user_data = {}
-#local_server=TelegramAPIServer.from_base('http://localhos')
+
 date = time.strftime('%Y-%m-%d %H-%M')
 logging.basicConfig(level=logging.INFO)
 storage = MemoryStorage()
@@ -40,15 +41,19 @@ class dialog(StatesGroup):
     send_contact_lin = State()
 
 
-@dp.message(Command['start'])
+@dp.message(Command('start'))
 async def start(message: Message):
-    adkb = types.InlineKeyboardMarkup(resize_keyboard=True)
-    adkb.add(types.InlineKeyboardButton(text="Дэвы/Разработка", callback_data='dev'))
-    adkb.add(types.InlineKeyboardButton(text="Администрирование Windows", callback_data='windows'))
-    adkb.add(types.InlineKeyboardButton(text="Практические задания Linux/bsd", callback_data='linux'))
-    adkb.add(types.InlineKeyboardButton(text="Проекты ИБ Безопасность", callback_data='IB'))
-    adkb.add(types.InlineKeyboardButton(text="Мне просто сделать документы по практике", callback_data='lazy'))
-    await message.answer('Выбери специальность', reply_markup=adkb)
+    kb = [
+        [
+            [types.KeyboardButton(text="Дэвы/Разработка", callback_data='dev')],
+            [types.KeyboardButton(text="Администрирование Windows", callback_data='windows')],
+            [types.KeyboardButton(text="Практические задания Linux/bsd", callback_data='lin')],
+            [types.KeyboardButton(text="Проекты ИБ Безопасность", callback_data='ib')]
+            [types.KeyboardButton(text="Просто Практика", callback_data='ib')]
+        ],
+    ]
+    keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
+    await message.answer("Выбери направление", reply_markup=keyboard)
 
 
 @dp.callback_query_handler(lambda c: c.data == 'dev')
