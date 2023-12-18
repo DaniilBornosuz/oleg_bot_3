@@ -2,20 +2,22 @@ import logging
 import sqlite3
 import types
 import time
+import asyncio
 
 import executor
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram import F
-from aiogram.types import Message
+from aiogram import Bot, Dispatcher, Router, types
 from aiogram.filters import Command
-from aiogram.enums import ParseMode
-from aiogram.utils.keyboard import ReplyKeyboardBuilder
+from aiogram.types import Message
+from aiogram.types import ReplyKeyboardRemove, \
+    ReplyKeyboardMarkup, KeyboardButton, \
+    InlineKeyboardMarkup, InlineKeyboardButton
 
 
-API_TOKEN = '6976515071:AAEoQKuWyo5IpuW257iJex-A2hCAfSxY_VQ'
+API_TOKEN = '6989160606:AAEbRp9yoEH1U3x8Yq1y61SWrK0dvZixAew'
 ADMIN = 417905942
 OLEG = 498487337
 oleg_chat_id = 0
@@ -56,54 +58,67 @@ async def start(message: Message):
     await message.answer("Выбери направление", reply_markup=keyboard)
 
 
-@dp.callback_query_handler(lambda c: c.data == 'dev')
+@dp.callback_query(lambda c: c.data == 'dev')
 async def sev(callback_query: types.CallbackQuery):
-    kkb = types.ReplyKeyboardMarkup()
-    bbt = types.KeyboardButton('Отправить контакт', request_contact=True)
-    kkb.add(bbt)
-    await bot.send_message(callback_query.from_user.id,
-                           'http://glpi.mintrans.gov.ru:19223/front/project.form.php?id=77',reply_markup=kkb)
-    await bot.send_photo(callback_query.from_user.id ,"photo/dev.jpeg",reply_markup=kkb)
-    await bot.send_message(callback_query.from_user.id,"Отправь карточку контакта")
-    await dialog.send_contact_dev.set()
+    adkb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    adkb.add(types.ReplyKeyboardMarkup(text="1001 Просмотр пакетов при авторизации wireshark ", callback_data='1001'))
+    adkb.add(types.ReplyKeyboardMarkup(text="1002 Перехватить wifi ", callback_data='1002'))
+    adkb.add(types.ReplyKeyboardMarkup(
+        text="1003 Произвести сканирование сайта и разобрать отчёт \n по найденным уязвимостям openVAs,либо nessus ",
+        callback_data='1003'))
+    adkb.add(types.ReplyKeyboardMarkup(text="1004 сформировать таблицу IP адресов в файле на основе обращений",
+                                       callback_data='1004'))
+    bbt = types.KeyboardButton(text='Выбери задание', request_contact=True)
+    adkb.add(bbt)
+    await bot.send_photo(callback_query.from_user.id, "Привет")
+    await dialog.send_contact_IB.set()
 
 
-@dp.callback_query_handler(lambda c: c.data == 'windows')
+@dp.callback_query(lambda c: c.data == 'windows')
 async def win(callback_query: types.CallbackQuery):
-    kkb = types.ReplyKeyboardMarkup()
-    bbt = types.KeyboardButton('Отправить контакт', request_contact=True)
-    kkb.add(bbt)
-    await bot.send_message(callback_query.from_user.id,
-                           'http://glpi.mintrans.gov.ru:19223/front/project.form.php?id=78',reply_markup=kkb)
-    await bot.send_message(callback_query.from_user.id,"Отправь карточку контакта")
-    await dialog.send_contact_win.set()
+    adkb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    adkb.add(types.ReplyKeyboardMarkup(text="1001 Просмотр пакетов при авторизации wireshark ", callback_data='1001'))
+    adkb.add(types.ReplyKeyboardMarkup(text="1002 Перехватить wifi ", callback_data='1002'))
+    adkb.add(types.ReplyKeyboardMarkup(
+        text="1003 Произвести сканирование сайта и разобрать отчёт \n по найденным уязвимостям openVAs,либо nessus ",
+        callback_data='1003'))
+    adkb.add(types.ReplyKeyboardMarkup(text="1004 сформировать таблицу IP адресов в файле на основе обращений",
+                                       callback_data='1004'))
+    bbt = types.KeyboardButton(text='Выбери задание', request_contact=True)
+    adkb.add(bbt)
+    await bot.send_photo(callback_query.from_user.id, "Привет")
+    await dialog.send_contact_IB.set()
 
 
-@dp.callback_query_handler(lambda c: c.data == 'linux')
+@dp.callback_query(lambda c: c.data == 'linux')
 async def linux(callback_query: types.CallbackQuery):
-    kkb = types.ReplyKeyboardMarkup()
-    bbt = types.KeyboardButton('Отправить контакт', request_contact=True)
-    kkb.add(bbt)
-    await bot.send_message(callback_query.from_user.id,
-                           'http://glpi.mintrans.gov.ru:19223/front/project.form.php?id=74',reply_markup=kkb)
+    adkb = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    adkb.add(types.ReplyKeyboardMarkup(text="1001 Просмотр пакетов при авторизации wireshark ", callback_data='1001'))
+    adkb.add(types.ReplyKeyboardMarkup(text="1002 Перехватить wifi ", callback_data='1002'))
+    adkb.add(types.ReplyKeyboardMarkup(
+        text="1003 Произвести сканирование сайта и разобрать отчёт \n по найденным уязвимостям openVAs,либо nessus ",
+        callback_data='1003'))
+    adkb.add(types.ReplyKeyboardMarkup(text="1004 сформировать таблицу IP адресов в файле на основе обращений",
+                                       callback_data='1004'))
+    bbt = types.KeyboardButton(text='Выбери задание', request_contact=True)
+    adkb.add(bbt)
+    await bot.send_photo(callback_query.from_user.id, "Привет")
+    await dialog.send_contact_IB.set()
 
-    await bot.send_message(callback_query.from_user.id,"Отправь карточку контакта")
-    await dialog.send_contact_lin.set()
 
-
-@dp.callback_query_handler(lambda c: c.data == 'IB')
+@dp.callback_query(lambda c: c.data == 'IB')
 async def IB(callback_query: types.CallbackQuery):
     adkb = types.ReplyKeyboardMarkup(resize_keyboard=True)
     adkb.add(types.ReplyKeyboardMarkup(text="1001 Просмотр пакетов при авторизации wireshark ", callback_data='1001'))
     adkb.add(types.ReplyKeyboardMarkup(text="1002 Перехватить wifi ", callback_data='1002'))
     adkb.add(types.ReplyKeyboardMarkup(text="1003 Произвести сканирование сайта и разобрать отчёт \n по найденным уязвимостям openVAs,либо nessus ", callback_data='1003'))
     adkb.add(types.ReplyKeyboardMarkup(text="1004 сформировать таблицу IP адресов в файле на основе обращений", callback_data='1004'))
-    bbt = types.KeyboardButton('Выбери задание', request_contact=True)
+    bbt = types.KeyboardButton(text='Выбери задание', request_contact=True)
     adkb.add(bbt)
-    #await bot.send_photo(callback_query.from_user.id, "AgACAgIAAxkBAAIBE2V0eaOZbhnP1mXnSfYzWkQ57z8IAAKe1DEb6oapSwdSJ15WxfkWAQADAgADeQADMwQ")
+    await bot.send_photo(callback_query.from_user.id, "Привет")
     await dialog.send_contact_IB.set()
 
-
+""""
 @dp.message(state=dialog.send_contact_dev, content_types=types.ContentType.CONTACT)
 async def proc(message: types.Message, state: FSMContext):
     await bot.send_contact(OLEG, first_name=message.contact.first_name, last_name=message.contact.last_name, phone_number=message.contact.phone_number)
@@ -127,11 +142,6 @@ async def proc(message: types.Message, state: FSMContext):
     await bot.send_contact(OLEG, first_name=message.contact.first_name, last_name=message.contact.last_name, phone_number=message.contact.phone_number)
     await bot.send_message(OLEG, text="linux")
     await state.finish()
-
-@dp.message(content_types=['photo'])
-async def get_file_id_p(message: types.Message):
-    await message.reply(message.photo[-1].file_id)
-
-
+"""
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
