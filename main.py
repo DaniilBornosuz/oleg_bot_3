@@ -5,18 +5,20 @@ import time
 import asyncio
 
 import executor
+from aiogram import F
 from aiogram import Bot, Dispatcher
+from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram import Bot, Dispatcher, Router, types
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.handlers import CallbackQueryHandler
-
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 API_TOKEN = '6989160606:AAEbRp9yoEH1U3x8Yq1y61SWrK0dvZixAew'
 ADMIN = 417905942
@@ -44,48 +46,46 @@ class dialog(StatesGroup):
     send_contact_lin = State()
 
 
+class MyCallback(CallbackData, prefix="my"):
+    spec: 'str'
+    num: 'int'
+
+
+
 @dp.message(Command('start'))
 async def start(message: Message):
-    kb = [
-            [types.KeyboardButton(text="Дэвы/Разработка", callback_data='dev')],
-            [types.KeyboardButton(text="Администрирование Windows", callback_data='win')],
-            [types.KeyboardButton(text="Практические задания Linux/bsd", callback_data='lin')],
-            [types.KeyboardButton(text="Проекты ИБ Безопасность", callback_data='ib')],
-            [types.KeyboardButton(text="Просто Практика", callback_data='loh')]
-    ]
-    keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
-    await message.answer("Выбери направление", reply_markup=keyboard)
+    builder = InlineKeyboardBuilder()
+    builder.add(types.InlineKeyboardButton(text="Девы и разработка",callback_data=MyCallback(spec="dev",num="200").pack())),
+    builder.add(types.InlineKeyboardButton(text="Администрирование Windows", callback_data='win')),
+    builder.add(types.InlineKeyboardButton(text="Практические задания Linux/bsd", callback_data='lin')),
+    builder.add(types.InlineKeyboardButton(text="Проекты ИБ Безопасность", callback_data='ib')),
+    builder.add(types.InlineKeyboardButton(text="Просто Практика", callback_data='loh'))
+    await message.answer("Выбери направление",reply_markup=builder.as_markup())
 
 
-@dp.callback_query_handler(text=['dev'])
-async def sev(callback_query: types.CallbackQuery):
-    adkb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    adkb.add(types.ReplyKeyboardMarkup(text="1001 Просмотр пакетов при авторизации wireshark ", callback_data='1001'))
-    adkb.add(types.ReplyKeyboardMarkup(text="1002 Перехватить wifi ", callback_data='1002'))
-    adkb.add(types.ReplyKeyboardMarkup(
-        text="1003 Произвести сканирование сайта и разобрать отчёт \n по найденным уязвимостям openVAs,либо nessus ",
-        callback_data='1003'))
-    adkb.add(types.ReplyKeyboardMarkup(text="1004 сформировать таблицу IP адресов в файле на основе обращений",
-                                       callback_data='1004'))
-    bbt = types.KeyboardButton(text='Выбери задание', request_contact=True)
-    adkb.add(bbt)
-    await bot.send_photo(callback_query.from_user.id, "Привет")
-    await dialog.send_contact_IB.set()
+
+@dp.callback_query(MyCallback.filter(F.spec == "dev"))
+async def sev(query: CallbackQuery, callback_data: MyCallback):
+    print(callback_data)
+    print(callback_data.spec)
+    print(callback_data.num)
+    #await callback.message.answer()
+    builder = InlineKeyboardBuilder()
+    builder.add(types.InlineKeyboardButton(text="Берусь", callback_data="dev"))
+    builder.add(types.InlineKeyboardButton(text="Не берусь", callback_data='win'))
+    await query.message.answer("З", reply_markup=builder.as_markup())
+    #await dialog.send_contact_IB.set()
 
 
 @dp.callback_query(lambda c: c.data == 'windows')
 async def win(callback_query: types.CallbackQuery):
-    adkb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    adkb.add(types.ReplyKeyboardMarkup(text="1001 Просмотр пакетов при авторизации wireshark ", callback_data='1001'))
-    adkb.add(types.ReplyKeyboardMarkup(text="1002 Перехватить wifi ", callback_data='1002'))
-    adkb.add(types.ReplyKeyboardMarkup(
-        text="1003 Произвести сканирование сайта и разобрать отчёт \n по найденным уязвимостям openVAs,либо nessus ",
-        callback_data='1003'))
-    adkb.add(types.ReplyKeyboardMarkup(text="1004 сформировать таблицу IP адресов в файле на основе обращений",
-                                       callback_data='1004'))
-    bbt = types.KeyboardButton(text='Выбери задание', request_contact=True)
-    adkb.add(bbt)
-    await bot.send_photo(callback_query.from_user.id, "Привет")
+    kb = [
+        [types.KeyboardButton(text="Берусь", callback_data='yes')],
+        [types.KeyboardButton(text="Не Берусь", callback_data='no')],
+        [types.KeyboardButton(text="", callback_data='lin')],
+    ]
+    keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
+    await bot.send_photo(callback_query.from_user.id, "Выибери задание ")
     await dialog.send_contact_IB.set()
 
 
