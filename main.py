@@ -15,6 +15,7 @@ from aiogram.types import Message
 from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.handlers import CallbackQueryHandler
 
 
 API_TOKEN = '6989160606:AAEbRp9yoEH1U3x8Yq1y61SWrK0dvZixAew'
@@ -46,19 +47,17 @@ class dialog(StatesGroup):
 @dp.message(Command('start'))
 async def start(message: Message):
     kb = [
-        [
             [types.KeyboardButton(text="Дэвы/Разработка", callback_data='dev')],
-            [types.KeyboardButton(text="Администрирование Windows", callback_data='windows')],
+            [types.KeyboardButton(text="Администрирование Windows", callback_data='win')],
             [types.KeyboardButton(text="Практические задания Linux/bsd", callback_data='lin')],
-            [types.KeyboardButton(text="Проекты ИБ Безопасность", callback_data='ib')]
-            [types.KeyboardButton(text="Просто Практика", callback_data='ib')]
-        ],
+            [types.KeyboardButton(text="Проекты ИБ Безопасность", callback_data='ib')],
+            [types.KeyboardButton(text="Просто Практика", callback_data='loh')]
     ]
     keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
     await message.answer("Выбери направление", reply_markup=keyboard)
 
 
-@dp.callback_query(lambda c: c.data == 'dev')
+@dp.callback_query_handler(text=['dev'])
 async def sev(callback_query: types.CallbackQuery):
     adkb = types.ReplyKeyboardMarkup(resize_keyboard=True)
     adkb.add(types.ReplyKeyboardMarkup(text="1001 Просмотр пакетов при авторизации wireshark ", callback_data='1001'))
@@ -149,7 +148,4 @@ async def main():
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 if __name__ == '__main__':
-    #executor.start_polling(dp, skip_updates=True)
-    #logging.basicConfig(level=logging.INFO, stream=sys.stdout)
-    #asyncio.run(main())
     asyncio.run(main())
