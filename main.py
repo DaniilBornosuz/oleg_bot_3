@@ -1,4 +1,5 @@
 import logging
+import os
 import sqlite3
 import types
 import time
@@ -14,6 +15,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram import Bot, Dispatcher, Router, types
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
+from pathlib import Path
 from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
@@ -49,6 +51,8 @@ class dialog(StatesGroup):
 class MyCallback(CallbackData, prefix="my"):
     spec: 'str'
     num: 'int'
+class push_button(CallbackData, prefix="fuck"):
+    click: 'str'
 
 
 
@@ -56,93 +60,65 @@ class MyCallback(CallbackData, prefix="my"):
 async def start(message: Message):
     builder = InlineKeyboardBuilder()
     builder.add(types.InlineKeyboardButton(text="Девы и разработка",callback_data=MyCallback(spec="dev",num="200").pack())),
-    builder.add(types.InlineKeyboardButton(text="Администрирование Windows", callback_data='win')),
-    builder.add(types.InlineKeyboardButton(text="Практические задания Linux/bsd", callback_data='lin')),
-    builder.add(types.InlineKeyboardButton(text="Проекты ИБ Безопасность", callback_data='ib')),
+    builder.add(types.InlineKeyboardButton(text="Администрирование Windows", callback_data=MyCallback(spec="win",num="300").pack())),
+    builder.add(types.InlineKeyboardButton(text="Практические задания Linux/bsd", callback_data=MyCallback(spec="lin",num="000").pack())),
+    builder.add(types.InlineKeyboardButton(text="Проекты ИБ Безопасность", callback_data=MyCallback(spec="ib",num="100").pack())),
     builder.add(types.InlineKeyboardButton(text="Просто Практика", callback_data='loh'))
     await message.answer("Выбери направление",reply_markup=builder.as_markup())
 
 
 
-@dp.callback_query(MyCallback.filter(F.spec == "dev"))
+@dp.callback_query(MyCallback.filter(F.spec))
 async def sev(query: CallbackQuery, callback_data: MyCallback):
-    print(callback_data)
-    print(callback_data.spec)
-    print(callback_data.num)
-    #await callback.message.answer()
+    i = 1
+    i= str(i)
+    #print(MyCallback.spec)
+    global dir
+    global list
+    dir = callback_data.spec
+    name = callback_data.num
+    list = os.listdir(dir)
+    with open(f"{callback_data.spec}/{callback_data.num}{i}.txt") as file:
+
+        task = file.read()
+        print(task)
+        global builder
     builder = InlineKeyboardBuilder()
-    builder.add(types.InlineKeyboardButton(text="Берусь", callback_data="dev"))
-    builder.add(types.InlineKeyboardButton(text="Не берусь", callback_data='win'))
-    await query.message.answer("З", reply_markup=builder.as_markup())
-    #await dialog.send_contact_IB.set()
+    builder.add(types.InlineKeyboardButton(text="Берусь", callback_data=push_button(click='yes').pack()))
+    builder.add(types.InlineKeyboardButton(text="<<", callback_data=push_button(click='<<').pack()))
+    builder.add(types.InlineKeyboardButton(text=">>", callback_data=push_button(click='>>').pack()))
+    builder.add(types.InlineKeyboardButton(text="назад",callback_data=push_button(click='end').pack()))
 
+    await query.message.edit_text(text=task, reply_markup=builder.as_markup())
+    return dir,name
 
-@dp.callback_query(lambda c: c.data == 'windows')
-async def win(callback_query: types.CallbackQuery):
-    kb = [
-        [types.KeyboardButton(text="Берусь", callback_data='yes')],
-        [types.KeyboardButton(text="Не Берусь", callback_data='no')],
-        [types.KeyboardButton(text="", callback_data='lin')],
-    ]
-    keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
-    await bot.send_photo(callback_query.from_user.id, "Выибери задание ")
-    await dialog.send_contact_IB.set()
+@dp.callback_query(push_button.filter(F.click))
+async def button(query: CallbackQuery,callback_data: push_button):
+    #builder = InlineKeyboardBuilder()
+    """builder.add(types.InlineKeyboardButton(text="Берусь ", callback_data=push_button(click='yes').pack()))
+    builder.add(types.InlineKeyboardButton(text="<< ", callback_data=push_button(click='<<').pack()))
+    builder.add(types.InlineKeyboardButton(text=">> ", callback_data=push_button(click='>>').pack()))
+    builder.add(types.InlineKeyboardButton(text="назад", callback_data=push_button(click='end').pack()))"""
+    print(callback_data.click)
+    print(push_button)
 
+    if (callback_data.click == ">>"):
+        for i in os.listdir(dir):
 
-@dp.callback_query(lambda c: c.data == 'linux')
-async def linux(callback_query: types.CallbackQuery):
-    adkb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    adkb.add(types.ReplyKeyboardMarkup(text="1001 Просмотр пакетов при авторизации wireshark ", callback_data='1001'))
-    adkb.add(types.ReplyKeyboardMarkup(text="1002 Перехватить wifi ", callback_data='1002'))
-    adkb.add(types.ReplyKeyboardMarkup(
-        text="1003 Произвести сканирование сайта и разобрать отчёт \n по найденным уязвимостям openVAs,либо nessus ",
-        callback_data='1003'))
-    adkb.add(types.ReplyKeyboardMarkup(text="1004 сформировать таблицу IP адресов в файле на основе обращений",
-                                       callback_data='1004'))
-    bbt = types.KeyboardButton(text='Выбери задание', request_contact=True)
-    adkb.add(bbt)
-    await bot.send_photo(callback_query.from_user.id, "Привет")
-    await dialog.send_contact_IB.set()
-
-
-@dp.callback_query(lambda c: c.data == 'IB')
-async def IB(callback_query: types.CallbackQuery):
-    adkb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    adkb.add(types.ReplyKeyboardMarkup(text="1001 Просмотр пакетов при авторизации wireshark ", callback_data='1001'))
-    adkb.add(types.ReplyKeyboardMarkup(text="1002 Перехватить wifi ", callback_data='1002'))
-    adkb.add(types.ReplyKeyboardMarkup(text="1003 Произвести сканирование сайта и разобрать отчёт \n по найденным уязвимостям openVAs,либо nessus ", callback_data='1003'))
-    adkb.add(types.ReplyKeyboardMarkup(text="1004 сформировать таблицу IP адресов в файле на основе обращений", callback_data='1004'))
-    bbt = types.KeyboardButton(text='Выбери задание', request_contact=True)
-    adkb.add(bbt)
-    await bot.send_photo(callback_query.from_user.id, "Привет")
-    await dialog.send_contact_IB.set()
-
-""""
-@dp.message(state=dialog.send_contact_dev, content_types=types.ContentType.CONTACT)
-async def proc(message: types.Message, state: FSMContext):
-    await bot.send_contact(OLEG, first_name=message.contact.first_name, last_name=message.contact.last_name, phone_number=message.contact.phone_number)
-    await bot.send_message(OLEG, text="dev")
-    await state.finish()
-
-@dp.message(state=dialog.send_contact_win, content_types=types.ContentType.CONTACT)
-async def proc(message: types.Message, state: FSMContext):
-    await bot.send_contact(OLEG, first_name=message.contact.first_name, last_name=message.contact.last_name, phone_number=message.contact.phone_number)
-    await bot.send_message(OLEG, text="win")
-    await state.finish()
-
-@dp.message(state=dialog.send_contact_IB, content_types=types.ContentType.CONTACT)
-async def proc(message: types.Message, state: FSMContext):
-    await bot.send_contact(ADMIN, first_name=message.contact.first_name, last_name=message.contact.last_name, phone_number=message.contact.phone_number)
-    await bot.send_message(ADMIN, text="IB")
-    await state.finish()
-
-@dp.message(state=dialog.send_contact_lin, content_types=types.ContentType.CONTACT)
-async def proc(message: types.Message, state: FSMContext):
-    await bot.send_contact(OLEG, first_name=message.contact.first_name, last_name=message.contact.last_name, phone_number=message.contact.phone_number)
-    await bot.send_message(OLEG, text="linux")
-    await state.finish()
-"""
-
+            with open(f"{dir}/{i}") as file:
+                task = file.read()
+                print(task)
+            await query.message.edit_text(text=task,reply_markup=builder.as_markup())
+    if (callback_data.click == "<<"):
+       #i = i - 1
+        for i in list:
+            with open(f"{dir}/{i}") as file:
+                task = file.read()
+                print(task)
+        await query.message.edit_text(text=task,reply_markup=builder.as_markup())
+    if (callback_data.click == "end"):
+        await query.message.answer("Для открытия меню отправьте /start")
+        await query.message.delete()
 
 async def main():
     await bot.delete_webhook(drop_pending_updates=True)
