@@ -4,6 +4,7 @@ import sqlite3
 import types
 import time
 import asyncio
+import random
 
 import executor
 from aiogram import F
@@ -38,7 +39,6 @@ cur = conn.cursor()
 cur.execute("""CREATE TABLE IF NOT EXISTS users(user_id INTEGER, block INTEGER);""")
 conn.commit()
 
-
 class dialog(StatesGroup):
     send_info = State()
     chosie_task = State()
@@ -47,14 +47,11 @@ class dialog(StatesGroup):
     send_contact_IB = State()
     send_contact_lin = State()
 
-
 class MyCallback(CallbackData, prefix="my"):
     spec: 'str'
     num: 'int'
 class push_button(CallbackData, prefix="fuck"):
     click: 'str'
-
-
 
 @dp.message(Command('start'))
 async def start(message: Message):
@@ -66,20 +63,15 @@ async def start(message: Message):
     builder.add(types.InlineKeyboardButton(text="Просто Практика", callback_data='loh'))
     await message.answer("Выбери направление",reply_markup=builder.as_markup())
 
-
-
 @dp.callback_query(MyCallback.filter(F.spec))
 async def sev(query: CallbackQuery, callback_data: MyCallback):
-    i = 1
-    i= str(i)
-    #print(MyCallback.spec)
-    global dir
-    global list
+    global list, dir,name,a
+    a = 1
     dir = callback_data.spec
     name = callback_data.num
     list = os.listdir(dir)
-    with open(f"{callback_data.spec}/{callback_data.num}{i}.txt") as file:
-
+    print(list)
+    with open(f"{callback_data.spec}/{name}{a}.txt") as file:
         task = file.read()
         print(task)
         global builder
@@ -94,27 +86,25 @@ async def sev(query: CallbackQuery, callback_data: MyCallback):
 
 @dp.callback_query(push_button.filter(F.click))
 async def button(query: CallbackQuery,callback_data: push_button):
-    #builder = InlineKeyboardBuilder()
-    """builder.add(types.InlineKeyboardButton(text="Берусь ", callback_data=push_button(click='yes').pack()))
-    builder.add(types.InlineKeyboardButton(text="<< ", callback_data=push_button(click='<<').pack()))
-    builder.add(types.InlineKeyboardButton(text=">> ", callback_data=push_button(click='>>').pack()))
-    builder.add(types.InlineKeyboardButton(text="назад", callback_data=push_button(click='end').pack()))"""
     print(callback_data.click)
     print(push_button)
-
+    a = len(list)
+    #for i in range(len(list)):
     if (callback_data.click == ">>"):
-        for i in os.listdir(dir):
-
-            with open(f"{dir}/{i}") as file:
-                task = file.read()
-                print(task)
-            await query.message.edit_text(text=task,reply_markup=builder.as_markup())
+        a = random.randint(1, a)
+        """
+        ни как не мог вспомнить ка делать блядский перебор вот и поставил рандом 
+        кому не нравится идите нахуй мой бот че хочу то и делаю 
+        захочу назову переменную хуй
+        """
+        print(a)
+        with open(f"{dir}/{name}{a}.txt") as file:
+            task = file.read()
+        await query.message.edit_text(text=task,reply_markup=builder.as_markup())
     if (callback_data.click == "<<"):
-       #i = i - 1
-        for i in list:
-            with open(f"{dir}/{i}") as file:
-                task = file.read()
-                print(task)
+        a = a+1
+        with open(f"{dir}/{name}{a}.txt") as file:
+            task = file.read()
         await query.message.edit_text(text=task,reply_markup=builder.as_markup())
     if (callback_data.click == "end"):
         await query.message.answer("Для открытия меню отправьте /start")
