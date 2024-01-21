@@ -21,25 +21,34 @@ router = Router()
 async def get_start(message: Message, bot: Bot, state: FSMContext) -> None:
   # Устанавливаем состояние 
   await state.set_state(FSMDialog.user_intent)
-  # Удаляем сообщение 
+
+  message_text = (
+    f"Привет {message.from_user.username}, что тебя интересует?\n"
+    "1.Практика с трудоустройством\n"
+    "2.Просто практика."
+  )
+
   await bot.send_message(
     message.from_user.id, 
-    f"Привет {message.from_user.username}, что тебя интересует?\n1.Практика с трудоустройством\n2.Просто практика.", 
+    message_text, 
     reply_markup=get_start_ikb())
+  # Удаляем сообщение 
   await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 """ Ответ на получение контакта пользователя """
-@router.message(lambda message: message.text == text_kb.contact )
-async def get_contacts(message: Message, state: FSMContext) -> None:
+@router.message(F.contact)
+async def get_contacts(message: Message, state: FSMContext, bot: Bot) -> None:
+  await state.update_data(get_contact = message.contact.phone_number)
+  
   # Получаем текущий стейт
   current_state = await state.get_state()
-  if current_state == "send_contact":
-    contact = message.contact
-    await state.update_data()
-    
-    await state.finish()
-    await message.answer(f"Твой номер успешно получен: {contact.phone_number}", reply_markup=ReplyKeyboardRemove())
+  current_state_data = await state.get_data()
+  print(f"Текущий sate: {current_state}")
+  print(current_state_data)
+
+  message_text = (f"Твой номер успешно получен: {message.contact.phone_number}")
+  await message.answer(message_text, reply_markup=ReplyKeyboardRemove())
   # Нужно сохранить контакт пользователя и прочую информацию
 
 

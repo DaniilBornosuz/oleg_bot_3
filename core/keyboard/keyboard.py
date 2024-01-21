@@ -17,7 +17,7 @@ def get_start_ikb() -> InlineKeyboardMarkup:
   ikb = InlineKeyboardMarkup(inline_keyboard=[
     [
       InlineKeyboardButton(text="1", callback_data=UserAction(click="1").pack()),
-      InlineKeyboardButton(text="2", callback_data=UserAction(click="2").pack())
+      InlineKeyboardButton(text="2", callback_data=UserAction(click="2").pack()),
     ],
   ])
   return ikb

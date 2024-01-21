@@ -10,7 +10,8 @@ from aiogram.methods.send_contact import SendContact
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from core.state.dialog import FSMDialog
-from core.keyboard.keyboard import UserAction, MyCallback, category_task_ikb, get_contact_user_kb
+from core.keyboard.keyboard import UserAction, MyCallback, \
+  category_task_ikb, get_contact_user_kb, get_start_ikb
 
 router = Router()
 
@@ -28,10 +29,12 @@ async def practice_and_employment(call: CallbackQuery, callback_data: UserAction
   current_state_data = await state.get_data()
   print(f"Текущий sate: {current_state}")
   print(current_state_data)
+
+  message_text = ("Вы выбрали практика с трудоустройством")
   
   await bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
-  await call.message.answer("Вы выбрали практика с трудоустройством", reply_markup=category_task_ikb())
-  await call.answer()
+  await call.message.answer(message_text, reply_markup=category_task_ikb())
+  await call.answer() # Обработка inline кнопки чтоб не показывались часики
 
 
 """ Обработка нажатия Inline кнопки 2 """
@@ -45,12 +48,35 @@ async def practice(call: CallbackQuery, callback_data: UserAction, state: FSMCon
   print(f"Текущий sate: {current_state}")
   print(current_state_data)
 
+  message_text = (
+    "Вы выбрали просто практика.\n"
+    "Отправьте свой контакт для связи.\n"
+    "Подписать документы можно по адресу: Улица Пушкина дом кукушкина"
+  )
+
   await bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
-  await call.message.answer("Вы выбрали просто практика.\nОтправьте свой контакт для связи.\nПодписать документы можно по адресу: Улица Пушкина дом кукушкина", 
-                            reply_markup=get_contact_user_kb())
+  await call.message.answer(message_text, reply_markup=get_contact_user_kb())
   await call.answer()
 
 
-# """ Обработка нажатия Inline кнопки назад """
-# @router.callback_query(UserAction.filter(F.click == "back"))
-# async def go_back(call: CallbackQuery, callback_data: UserAction, state: FSMContext, bot: Bot):
+""" Обработка нажатия Inline кнопки назад """
+@router.callback_query(UserAction.filter(F.click == "back"))
+async def go_back(call: CallbackQuery, callback_data: UserAction, state: FSMContext, bot: Bot):
+  await state.set_state(state=FSMDialog.user_intent)
+
+  current_state = await state.get_state()
+  current_state_data = await state.get_data()
+  print(f"Текущий sate: {current_state}")
+  print(current_state_data)
+
+  message_text = ( 
+    "Привет, что тебя интересует?\n"
+    "1.Практика с трудоустройством\n"
+    "2.Просто практика."
+  )
+
+  await bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
+  await call.message.answer(
+    text=message_text,  
+    reply_markup=get_start_ikb())
+  await call.answer()
