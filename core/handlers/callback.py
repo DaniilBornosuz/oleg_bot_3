@@ -56,7 +56,7 @@ async def practice(call: CallbackQuery, callback_data: UserAction, state: FSMCon
 
   await bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
   await call.message.answer(message_text, reply_markup=get_contact_user_kb())
-  await call.message.answer_location(latitude=55.792883, longitude=37.801961, horizontal_accuracy=200.0,  )
+  await call.message.answer_location(latitude=55.792883, longitude=37.801961, horizontal_accuracy=200.0)
   await call.answer()
 
 
