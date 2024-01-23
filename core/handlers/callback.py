@@ -51,11 +51,12 @@ async def practice(call: CallbackQuery, callback_data: UserAction, state: FSMCon
   message_text = (
     "Вы выбрали просто практика.\n"
     "Отправьте свой контакт для связи.\n"
-    "Подписать документы можно по адресу: Улица Пушкина дом кукушкина"
+    "Подписать документы можно по адресу: ул. Первомайская, 76, Москва, 105554"
   )
 
   await bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
   await call.message.answer(message_text, reply_markup=get_contact_user_kb())
+  await call.message.answer_location(latitude=55.792883, longitude=37.801961, horizontal_accuracy=200.0,  )
   await call.answer()
 
 
